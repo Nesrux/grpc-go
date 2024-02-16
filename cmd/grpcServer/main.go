@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"net"
 
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/nesrux/grpc/internal/database"
 	"github.com/nesrux/grpc/internal/pb"
 	service "github.com/nesrux/grpc/internal/services"
@@ -12,7 +13,7 @@ import (
 )
 
 func main() {
-	db, err := sql.Open("sqlite3", "./db/sqlite")
+	db, err := sql.Open("sqlite3", "./db.sqlite")
 
 	if err != nil {
 		panic(err)
@@ -21,12 +22,12 @@ func main() {
 
 	categoryDb := database.NewCategory(db)
 	categoryService := service.NewCategoryService(*categoryDb)
-	
+
 	grpcServer := grpc.NewServer()
 	pb.RegisterCategoryServiceServer(grpcServer, categoryService)
 	reflection.Register(grpcServer)
 
-	lis, err := net.Listen("tcp", ":5051")
+	lis, err := net.Listen("tcp", ":50051")
 	if err != nil {
 		panic(err)
 	}
@@ -35,3 +36,6 @@ func main() {
 		panic(err)
 	}
 }
+
+// ja que nao esta indo com comando direto ->  ~/go/bin/evans -r repl
+// depois  package pb, depois  service CategoryService
