@@ -18,7 +18,7 @@ message CategoryResponse{
 }
 
 service CategoryService{
-  rpc CreateCategory(CreateCategoryRequest) returns (CategoryResponse){}
+  rpc CreateCategory(CreateCategoryRequest) returns (Category){}
 
 }
 /* Comando para gerar -> protoc --go_out=. --go-grpc_out=. proto/course_category.proto*/
