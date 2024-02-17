@@ -2,6 +2,8 @@ syntax = "proto3";
 package pb; // = protocol buff por padrão
 option go_package = "internal/pb"; //cria uma pasta
 
+message blank{}
+
 message Category{
   string id = 1;
   string name = 2;
@@ -17,8 +19,14 @@ message CategoryResponse{
   Category Category = 1;
 }
 
+message CategoryList{
+  repeated Category categories = 1;
+}
+
 service CategoryService{
   rpc CreateCategory(CreateCategoryRequest) returns (Category){}
-
+  rpc ListCategory(blank) returns (CategoryList) {}
 }
+
+
 /* Comando para gerar -> protoc --go_out=. --go-grpc_out=. proto/course_category.proto*/
