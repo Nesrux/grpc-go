@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"io"
 
 	"github.com/nesrux/grpc/internal/database"
 	"github.com/nesrux/grpc/internal/pb"
@@ -67,4 +68,29 @@ func (c *CategoryService) GetCategory(ctx context.Context, in *pb.CategoryGetReq
 
 	return categoryResponse, nil
 
+}
+
+func (c *CategoryService) CreateCategoryStream(stream pb.CategoryService_CreateCategoryStreamServer) error {
+	categories := &pb.CategoryList{}
+
+	for {
+		category, err := stream.Recv()
+		if err == io.EOF {
+			return stream.SendAndClose(categories)
+		}
+		if err != nil {
+			return err
+		}
+		categoriesResult, err := c.CategoryDb.Create(category.Name, category.Description)
+		if err != nil {
+			return err
+		}
+		categories.Categories = append(categories.Categories, &pb.Category{
+			Id:          categoriesResult.ID,
+			Name:        categoriesResult.Name,
+			Description: categoriesResult.Description,
+		})
+		/* para finalizar a coneção aperta o comando é CTRL + D*/
+
+	}
 }
